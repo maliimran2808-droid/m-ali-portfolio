@@ -39,25 +39,18 @@ export default function SkillCards() {
     const container = containerRef.current;
     if (!section || !container) return;
 
+    // ── Skip animation on mobile — static view handles it ──
+    if (window.innerWidth < 768) return;
+
     const cardEls = cardsRef.current.filter(Boolean) as HTMLDivElement[];
     const cardInners = cardInnerRef.current.filter(Boolean) as HTMLDivElement[];
     const floatEls = floatRef.current.filter(Boolean) as HTMLDivElement[];
 
-    const isMobile = window.innerWidth < 768;
     const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
-    // Responsive values
-    const spreadX = isMobile
-      ? [-70, 0, 70]
-      : isTablet
-      ? [-200, 0, 200]
-      : [-260, 0, 260];
-
-    const finalX = isMobile
-      ? [-85, 0, 85]
-      : isTablet
-      ? [-260, 0, 260]
-      : [-310, 0, 310];
+    const finalX = isTablet
+      ? [-290, 0, 290]
+      : [-375, 0, 375];
 
     // Set initial states
     gsap.set(cardEls, {
@@ -93,60 +86,54 @@ export default function SkillCards() {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: section,
-        start: "top top",
-        end: "+=500%",
+        start: "top 7%",
+        end: "+=280%",
         pin: true,
         scrub: 3,
         anticipatePin: 1,
       },
     });
 
-    // ── Phase 1: Juggle (0 → 0.5) ──────────────────────
-    // All 3 cards bounce up then down, no gap after
-    cardEls.forEach((card, i) => {
-      tl.to(card, {
-        y: -30,
-        duration: 0.08,
-        ease: "sine.out",
-      }, i * 0.07);
+    const tiltAngles = [-12, 0, 12];
 
-      tl.to(card, {
-        y: 0,
-        duration: 0.08,
-        ease: "sine.in",
-      }, i * 0.07 + 0.08);
+    // Phase 1: Cards spread to final X
+    cardEls.forEach((card, i) => {
+      tl.to(
+        card,
+        {
+          x: finalX[i],
+          duration: 1,
+          ease: "power1.inOut",
+        },
+        0
+      );
     });
 
-    // ── Phase 2: Fan out (0.5 → 1.1) ───────────────────
-    // Immediately after juggle, cards fan out with rotation
-    cardEls.forEach((card, i) => {
-      tl.to(card, {
-        x: spreadX[i],
-        rotateZ: i === 0 ? -14 : i === 2 ? 14 : 0,
-        duration: 0.5,
-        ease: "power3.inOut",
-      }, 0.5);
-    });
-
-    // ── Phase 3: Straighten (0.9 → 1.4) ────────────────
-    // Overlaps with fan — straighten while moving to final X
-    cardEls.forEach((card, i) => {
-      tl.to(card, {
-        x: finalX[i],
-        rotateZ: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
-      }, 0.9);
-    });
-
-    // ── Phase 4: Flip (1.3 → 2.0) ──────────────────────
-    // Overlaps with straighten — flip one by one
+    // Phase 1b: Tilt as they spread out — stays tilted
     cardInners.forEach((inner, i) => {
-      tl.to(inner, {
-        rotateY: 180,
-        duration: 0.55,
-        ease: "power2.inOut",
-      }, 1.3 + i * 0.18);
+      tl.to(
+        inner,
+        {
+          rotateZ: tiltAngles[i],
+          duration: 1,
+          ease: "power1.inOut",
+        },
+        0
+      );
+    });
+
+    // Phase 2: Flip AND straighten together — one single motion
+    cardInners.forEach((inner, i) => {
+      tl.to(
+        inner,
+        {
+          rotateY: 180,
+          rotateZ: 0,
+          duration: 0.75,
+          ease: "power3.inOut",
+        },
+        1.1 + i * 0.35
+      );
     });
 
     return () => {
@@ -155,92 +142,148 @@ export default function SkillCards() {
   }, []);
 
   return (
-    <div
-      ref={sectionRef}
-      className="relative h-screen w-full overflow-hidden bg-[#000]"
-    >
-      <div
-        ref={containerRef}
-        className="flex h-full w-full items-center justify-center"
-        style={{ perspective: "1200px" }}
-      >
-        {cards.map((card, index) => (
-          <div
-            key={card.id}
-            ref={(el) => { cardsRef.current[index] = el; }}
-            className="absolute"
-            style={{
-              width: "clamp(180px, 18vw, 260px)",
-              height: "clamp(270px, 27vw, 400px)",
-              transformStyle: "preserve-3d",
-              cursor: "pointer",
-            }}
-          >
-            {/* Float layer */}
+    <>
+      {/* ── MOBILE STATIC VIEW — only visible below 768px ── */}
+      <div className="block md:hidden w-full bg-[#000] py-16 px-5">
+        <div className="flex flex-col items-center gap-6">
+          {cards.map((card) => (
             <div
-              ref={(el) => { floatRef.current[index] = el; }}
-              className="relative h-full w-full"
-              style={{ transformStyle: "preserve-3d" }}
+              key={card.id}
+              className="w-full max-w-sm rounded-2xl flex flex-col justify-between"
+              style={{
+                background: "#111111",
+                border: "1px solid rgba(255,255,255,0.08)",
+                padding: "28px 24px",
+                minHeight: "280px",
+              }}
             >
-              {/* Flip layer */}
+              {/* Title */}
+              <h3
+                className="font-[family-name:var(--font-montserrat)] font-black uppercase tracking-tight text-white"
+                style={{ fontSize: "22px" }}
+              >
+                {card.title}
+              </h3>
+
+              {/* Skills */}
+              <div className="flex flex-col mt-4">
+                {card.skills.map((skill, i) => (
+                  <div key={i}>
+                    <p
+                      className="font-[family-name:var(--font-montserrat)] font-medium uppercase tracking-widest text-white/60 py-3"
+                      style={{ fontSize: "11px" }}
+                    >
+                      {skill}
+                    </p>
+                    {i < card.skills.length - 1 && (
+                      <div className="h-px w-full bg-white/10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Number */}
+              <div className="flex justify-end mt-4">
+                <span
+                  className="font-[family-name:var(--font-montserrat)] font-black"
+                  style={{ fontSize: "64px", color: "#FF6D00" }}
+                >
+                  {card.number}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* ── DESKTOP ANIMATED VIEW — only visible 768px and above ── */}
+      <div
+        ref={sectionRef}
+        className="relative h-screen w-full overflow-hidden bg-[#000] hidden md:block"
+      >
+        <div
+          ref={containerRef}
+          className="flex h-full w-full items-center justify-center"
+          style={{ perspective: "1200px" }}
+        >
+          {cards.map((card, index) => (
+            <div
+              key={card.id}
+              ref={(el) => { cardsRef.current[index] = el; }}
+              className="absolute"
+              style={{
+                width: "clamp(340px, 18vw, 340px)",
+                height: "clamp(470px, 27vw, 470px)",
+                transformStyle: "preserve-3d",
+                cursor: "pointer",
+              }}
+            >
+              {/* Float layer */}
               <div
-                ref={(el) => { cardInnerRef.current[index] = el; }}
+                ref={(el) => { floatRef.current[index] = el; }}
                 className="relative h-full w-full"
                 style={{ transformStyle: "preserve-3d" }}
               >
-                {/* FRONT FACE */}
+                {/* Flip layer */}
                 <div
-                  className="absolute inset-0 overflow-hidden rounded-2xl"
-                  style={{ backfaceVisibility: "hidden" }}
+                  ref={(el) => { cardInnerRef.current[index] = el; }}
+                  className="relative h-full w-full"
+                  style={{ transformStyle: "preserve-3d" }}
                 >
-                  <img
-                    src="./images/card.png"
-                    alt="Card Front"
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-
-                {/* BACK FACE */}
-                <div
-                  className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-2xl p-6 md:p-8"
-                  style={{
-                    backfaceVisibility: "hidden",
-                    transform: "rotateY(180deg)",
-                    background: "#111111",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
-                >
-                  <h3 className="font-[family-name:var(--font-montserrat)] text-xl font-black uppercase tracking-tight text-white md:text-2xl lg:text-3xl">
-                    {card.title}
-                  </h3>
-
-                  <div className="flex flex-col gap-0">
-                    {card.skills.map((skill, i) => (
-                      <div key={i}>
-                        <p className="font-[family-name:var(--font-montserrat)] py-3 text-xs font-medium uppercase tracking-widest text-white/60 md:text-sm">
-                          {skill}
-                        </p>
-                        {i < card.skills.length - 1 && (
-                          <div className="h-px w-full bg-white/10" />
-                        )}
-                      </div>
-                    ))}
+                  {/* FRONT FACE */}
+                  <div
+                    className="absolute inset-0 overflow-hidden rounded-2xl"
+                    style={{ backfaceVisibility: "hidden" }}
+                  >
+                    <img
+                      src="./images/card.png"
+                      alt="Card Front"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
 
-                  <div className="flex justify-end">
-                    <span
-                      className="font-[family-name:var(--font-montserrat)] text-5xl font-black md:text-6xl lg:text-7xl"
-                      style={{ color: "#FF6D00" }}
-                    >
-                      {card.number}
-                    </span>
+                  {/* BACK FACE */}
+                  <div
+                    className="absolute inset-0 flex flex-col justify-between overflow-hidden rounded-2xl p-6 md:p-8"
+                    style={{
+                      backfaceVisibility: "hidden",
+                      transform: "rotateY(180deg)",
+                      background: "#111111",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                    }}
+                  >
+                    <h3 className="font-[family-name:var(--font-montserrat)] text-xl font-black uppercase tracking-tight text-white md:text-2xl lg:text-3xl">
+                      {card.title}
+                    </h3>
+
+                    <div className="flex flex-col gap-0">
+                      {card.skills.map((skill, i) => (
+                        <div key={i}>
+                          <p className="font-[family-name:var(--font-montserrat)] py-3 text-xs font-medium uppercase tracking-widest text-white/60 md:text-sm">
+                            {skill}
+                          </p>
+                          {i < card.skills.length - 1 && (
+                            <div className="h-px w-full bg-white/10" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex justify-end">
+                      <span
+                        className="font-[family-name:var(--font-montserrat)] text-5xl font-black md:text-6xl lg:text-7xl"
+                        style={{ color: "#FF6D00" }}
+                      >
+                        {card.number}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+    </>
   );
 }
