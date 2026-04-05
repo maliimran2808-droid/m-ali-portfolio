@@ -124,7 +124,7 @@ if (window.innerWidth < 768) {
             start: "top 7%",
         end: "+=280%",
         pin: true,
-        scrub: 3,
+        scrub: 2.5,
         anticipatePin: 1,
       },
     });
@@ -265,7 +265,7 @@ if (window.innerWidth < 768) {
                     style={{ backfaceVisibility: "hidden" }}
                   >
                     <img
-                      src="./images/card.png"
+                      src="./images/card.webp"
                       alt="Card Front"
                       className="h-full w-full object-cover"
                     />
@@ -281,27 +281,25 @@ if (window.innerWidth < 768) {
                       border: "1px solid rgba(255,255,255,0.08)",
                     }}
                   >
-                    <h3 className="font-[family-name:var(--font-montserrat)] text-xl font-black uppercase tracking-tight text-white md:text-2xl lg:text-3xl">
+                    <h3 className="font-[family-name:var(--font-montserrat)] md:text-xl font-[500] uppercase tracking-normal text-white md:text-2xl lg:text-3xl">
                       {card.title}
                     </h3>
 
                     <div className="flex flex-col gap-0">
                       {card.skills.map((skill, i) => (
                         <div key={i}>
-                          <p className="font-[family-name:var(--font-montserrat)] py-3 text-xs font-medium uppercase tracking-widest text-white/60 md:text-sm">
+                          <p className="font-[family-name:var(--font-montserrat)] py-3 text-xs font-medium uppercase tracking-widest text-white/60 md:text-sm" style={{borderBottom:'1px dashed rgba(255,255,255,0.08)'}}>
                             {skill}
                           </p>
-                          {i < card.skills.length - 1 && (
-                            <div className="h-px w-full bg-white/10" />
-                          )}
+                          
                         </div>
                       ))}
                     </div>
 
                     <div className="flex justify-end">
                       <span
-                        className="font-[family-name:var(--font-montserrat)] text-5xl font-black md:text-6xl lg:text-7xl"
-                        style={{ color: "#FF6D00" }}
+                        className="font-[family-name:var(--font-montserrat)] text-5xl font-[600] md:text-6xl lg:text-7xl"
+                        style={{ color: "#f45100" }}
                       >
                         {card.number}
                       </span>

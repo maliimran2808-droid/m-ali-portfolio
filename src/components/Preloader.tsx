@@ -48,14 +48,12 @@ export default function Preloader() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 z-[10000] flex flex-col items-center justify-center bg-[var(--color-background)] text-[var(--color-accent-light)]"
+      className="fixed inset-0 z-[10000]  flex flex-col items-end justify-end bg-[#f45100] text-[#000]"
     >
-      <div className="font-[family-name:var(--font-montserrat)] text-5xl font-black md:text-7xl">
-        {counter}%
+      <div className="font-[family-name:var(--font-montserrat)] text-5xl font-[600] sm:text-7xl md:text-[10rem]">
+        {counter}
       </div>
-      <div className="mt-2 text-sm uppercase tracking-widest text-[var(--color-text-secondary)]">
-        Engineering Experience
-      </div>
+      
     </div>
   );
 }

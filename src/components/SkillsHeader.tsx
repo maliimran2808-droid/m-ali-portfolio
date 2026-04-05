@@ -86,7 +86,7 @@ export default function ProjectsHeader() {
   return (
     <div
       ref={sectionRef}
-      className="flex flex-col items-start gap-6 px-6 md:px-16 lg:px-24 bg-[#000] py-20 md:py-28"
+      className="flex flex-col items-start gap-6 px-6 md:px-16 lg:px-24 bg-[#000] pt-17 pb-10"
     >
       {/* Title */}
       <div className="overflow-hidden">
