@@ -1,0 +1,94 @@
+@import "tailwindcss";
+
+@theme {
+  --color-background: #000;
+  --color-surface: #1d1d20;
+  --color-elevated: #2a2a2e;
+  --color-accent-light: #f5f7ff;
+  --color-accent-muted: #e2e4ed;
+  --color-text-primary: #fafafa;
+  --color-text-secondary: #a1a1aa;
+  --color-text-muted: #52525b;
+  
+  --font-sans: var(--font-inter);
+  --font-montserrat: var(--font-montserrat);
+  --font-poppins: var(--font-poppins);
+  --font-manrope: var(--font-manrope);
+}
+
+@layer base {
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    font-family: var(--font-poppins);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  
+    overflow-x: hidden;
+    /* min-height: 200vh; */
+  }
+  
+  ::selection {
+    background-color: var(--color-accent-light);
+    color: var(--color-background);
+  }
+}
+
+
+
+/* Custom minimal dark scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-elevated);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Hide system cursor on desktop */
+@media (min-width: 768px) {
+  * {
+    cursor: none !important;
+  }
+}
+/* When menu is open, force cursor dark */
+body.menu-is-open .cursor-dot {
+  background-color: #0a0a0a !important;
+}
+
+body.menu-is-open .cursor-ring {
+  border-color: rgba(10, 10, 10, 0.6) !important;
+}
+
+body.menu-is-open .cursor-glow {
+  opacity: 0 !important;
+}
+/* Grain Texture */
+.grain-texture::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Marquee Animation */
+@keyframes marquee-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee-left {
+  animation: marquee-left 60s linear infinite;
+}
