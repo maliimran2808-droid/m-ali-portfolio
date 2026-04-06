@@ -5,6 +5,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import CustomCursor from "@/components/CustomCursor";
 import Preloader from "@/components/Preloader";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat" });
@@ -31,7 +33,9 @@ export default function RootLayout({
         <CustomCursor />
         <SmoothScroll>
           <Header />
+
           {children}
+        <Footer />
         </SmoothScroll>
       </body>
     </html>

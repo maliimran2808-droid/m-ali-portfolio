@@ -109,7 +109,7 @@ useEffect(() => {
     <div
       ref={overlayRef}
       style={{ display: "none", clipPath: "circle(0% at 100% 0%)" }}
-      className="fixed inset-0 z-[998] flex flex-col bg-[var(--color-accent-light)]"
+      className="fixed inset-0 z-[998] flex flex-col bg-[#f45100]"
     >
     <div
   ref={contentRef}

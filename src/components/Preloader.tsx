@@ -33,6 +33,7 @@ export default function Preloader() {
               onComplete: () => {
                 setIsVisible(false);
                 window.dispatchEvent(new CustomEvent("preloaderDone"));
+             
               },
             });
           }, 400);

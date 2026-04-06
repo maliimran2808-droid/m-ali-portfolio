@@ -4,6 +4,7 @@ import ProjectsHeader from "@/components/ProjectsHeader";
 import Projects from "@/components/Projects";
 import SkillsHeader from "@/components/SkillsHeader";
 import SkillCards from "@/components/SkillCards";
+import CallToAction from "@/components/CallToAction";
 export default function Home() {
   return (
     <main>
@@ -16,7 +17,7 @@ export default function Home() {
       </section>
       <SkillsHeader/>
       <SkillCards />
-      <div className="h-screen bg-[var(--color-background)]" />
+      <CallToAction />
     </main>
   );
 }
