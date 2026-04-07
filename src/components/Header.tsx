@@ -90,37 +90,34 @@ export default function Header() {
             paddingLeft: "48px",
             paddingRight: "48px",
           }}
-          className={`w-full flex items-center justify-between rounded-full transition-all duration-500 ${
-            isScrolled
+          className={`w-full flex items-center justify-between rounded-full transition-all duration-500 ${isScrolled
               ? "border border-white/10 bg-[#0a0a0a]/60 py-3 shadow-[0_0_30px_rgba(255,255,255,0.05)] backdrop-blur-xl"
               : "border border-transparent bg-transparent py-5"
-          }`}
+            }`}
         >
           {/* Logo */}
           <a
-            href="#"
+            href="/"
             className="font-[family-name:var(--font-montserrat)] text-sm font-bold uppercase tracking-[0.3em] text-[var(--color-text-primary)] transition-opacity hover:opacity-70"
           >
             <img
               src="./images/logo.png"
               alt="Logo"
-              className={`transition-all duration-500 ${
-                isScrolled ? "w-[100px]" : "w-[150px]"
-              }`}
+              className={`transition-all duration-500 ${isScrolled ? "w-[100px]" : "w-[150px]"
+                }`}
             />
           </a>
 
           {/* Right Side */}
           <div className="flex items-center gap-4 md:gap-6">
             {/* Available dot — hidden when scrolled */}
-           
+
 
             {/* LET'S TALK Button */}
             <a
               href="#contact"
-              className={`font-[family-name:var(--font-montserrat)] rounded-full border border-[var(--color-accent-light)] font-semibold uppercase tracking-[0.15em] text-[var(--color-accent-light)] transition-all duration-300 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-background)] ${
-                isScrolled ? "px-3 py-1.5 text-[10px]" : "px-4 py-2 text-xs md:px-5"
-              }`}
+              className={`font-[family-name:var(--font-montserrat)] rounded-full border border-[var(--color-accent-light)] font-semibold uppercase tracking-[0.15em] text-[var(--color-accent-light)] transition-all duration-300 hover:bg-[var(--color-accent-light)] hover:text-[var(--color-background)] ${isScrolled ? "px-3 py-1.5 text-[10px]" : "px-4 py-2 text-xs md:px-5"
+                }`}
             >
               LET&apos;S TALK
             </a>
@@ -132,31 +129,26 @@ export default function Header() {
             >
               <span
                 ref={line1Ref}
-                className={`block h-[1.5px] origin-center transition-colors duration-300 ${
-                  isScrolled ? "w-5" : "w-7"
-                } ${
-                  isOpen
+                className={`block h-[1.5px] origin-center transition-colors duration-300 ${isScrolled ? "w-5" : "w-7"
+                  } ${isOpen
                     ? "bg-[var(--color-background)]"
                     : "bg-[var(--color-text-primary)]"
-                }`}
+                  }`}
               />
               <span
                 ref={line2Ref}
-                className={`block h-[1.5px] w-4 origin-center transition-colors duration-300 ${
-                  isOpen
+                className={`block h-[1.5px] w-4 origin-center transition-colors duration-300 ${isOpen
                     ? "bg-[var(--color-background)]"
                     : "bg-[var(--color-text-primary)]"
-                }`}
+                  }`}
               />
               <span
                 ref={line3Ref}
-                className={`block h-[1.5px] origin-center transition-colors duration-300 ${
-                  isScrolled ? "w-5" : "w-7"
-                } ${
-                  isOpen
+                className={`block h-[1.5px] origin-center transition-colors duration-300 ${isScrolled ? "w-5" : "w-7"
+                  } ${isOpen
                     ? "bg-[var(--color-background)]"
                     : "bg-[var(--color-text-primary)]"
-                }`}
+                  }`}
               />
             </button>
           </div>

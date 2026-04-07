@@ -20,26 +20,26 @@ export default function Footer() {
     // ── Divider line animates from left to right ──
     gsap.set(divider, { scaleX: 0, transformOrigin: "left center" });
 
-ScrollTrigger.create({
-  trigger: name,
-  start: "top 95%",
-  onEnter: () => {
-    gsap.to(name, {
-      y: 0,
-      opacity: 1,
-      duration: 1.1,
-      ease: "power3.out",
+    ScrollTrigger.create({
+      trigger: name,
+      start: "top 95%",
+      onEnter: () => {
+        gsap.to(name, {
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power3.out",
+        });
+      },
+      onEnterBack: () => {
+        gsap.to(name, {
+          y: 0,
+          opacity: 1,
+          duration: 1.1,
+          ease: "power3.out",
+        });
+      },
     });
-  },
-  onEnterBack: () => {
-    gsap.to(name, {
-      y: 0,
-      opacity: 1,
-      duration: 1.1,
-      ease: "power3.out",
-    });
-  },
-});
 
     // ── Reveal elements slide up ──
     const revealEls = footer.querySelectorAll(".footer-reveal");
@@ -61,29 +61,29 @@ ScrollTrigger.create({
 
     // ── Name banner slides up ──
     gsap.set(name, { y: 80, opacity: 0 });
-if (ScrollTrigger.isInViewport(name)) {
-  gsap.to(name, {
-    y: 0,
-    opacity: 1,
-    duration: 1,
-    ease: "power3.out",
-  });
-}
-gsap.set(name, { y: 80, opacity: 0 });
+    if (ScrollTrigger.isInViewport(name)) {
+      gsap.to(name, {
+        y: 0,
+        opacity: 1,
+        duration: 1,
+        ease: "power3.out",
+      });
+    }
+    gsap.set(name, { y: 80, opacity: 0 });
 
-ScrollTrigger.create({
-  trigger: name,
-  start: "top 90%",
-  onEnter: () => {
-    gsap.to(name, {
-      y: 0,
-      opacity: 1,
-      duration: 1,
-      ease: "power3.out",
+    ScrollTrigger.create({
+      trigger: name,
+      start: "top 90%",
+      onEnter: () => {
+        gsap.to(name, {
+          y: 0,
+          opacity: 1,
+          duration: 1,
+          ease: "power3.out",
+        });
+      },
+      once: true,
     });
-  },
-  once: true,
-});
 
     return () => {
       ScrollTrigger.getAll().forEach((t) => t.kill());
@@ -94,7 +94,7 @@ ScrollTrigger.create({
 
   const navLinks = [
     { label: "Home", href: "#hero" },
-    { label: "About", href: "#about" },
+    { label: "About", href: "/about" },
     { label: "Projects", href: "#projects" },
     { label: "Contact", href: "#contact" },
   ];
@@ -202,29 +202,29 @@ ScrollTrigger.create({
 
         {/* ── SECOND DIVIDER ── */}
         <div className="my-10">
-     <div
+          <div
             ref={dividerRef}
             className="h-px w-full"
             style={{ background: "rgba(255,255,255,0.12)" }}
           />
         </div>
-</div>
+      </div>
       {/* ── ROW 3: Full Width Name Banner ── */}
       <div className=" relative overflow-visible w-full">
         <div ref={nameRef} className="w-full px-1  pb-0 pt-3 md:px-1 opacity-1 translate-0">
           <h1
             className="w-full text-center font-[family-name:var(--font-poppins)] font-[400] mb-[-25px] uppercase leading-none"
             style={{
-          fontSize: "clamp(60px, 14.4vw, 460px)",
+              fontSize: "clamp(60px, 14.4vw, 460px)",
               letterSpacing: "-0.07em",
-   
+
               // ── Top to bottom gradient on the text ──
               background: "linear-gradient(180deg, #f55200 0%, #fa7200 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
               transform: "translate(0px, 0px)",
               backgroundClip: "text",
-                         opacity: "1",
+              opacity: "1",
             }}
           >
             Muhammad Ali

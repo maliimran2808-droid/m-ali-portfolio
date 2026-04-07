@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
-import {MessageCircle, Send, Mail } from "lucide-react";
+import { MessageCircle, Send, Mail } from "lucide-react";
 
 interface MobileMenuProps {
   isOpen: boolean;
@@ -15,93 +15,93 @@ export default function MobileMenu({ isOpen, setIsOpen }: MobileMenuProps) {
   const linksRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
   const bottomRef = useRef<HTMLDivElement>(null);
-useEffect(() => {
+  useEffect(() => {
 
     if (isFirstRender.current) {
-    isFirstRender.current = false;
-    return;
-  }
+      isFirstRender.current = false;
+      return;
+    }
 
 
-  const overlay = overlayRef.current;
-  const content = contentRef.current;
-  const links = linksRef.current;
-  const bottom = bottomRef.current;
-  
-  if (!overlay || !content || !links || !bottom) return;
+    const overlay = overlayRef.current;
+    const content = contentRef.current;
+    const links = linksRef.current;
+    const bottom = bottomRef.current;
 
-  if (isOpen) {
-    // Prevent body scroll
-    document.body.style.overflow = "hidden";
+    if (!overlay || !content || !links || !bottom) return;
 
-    // Tell cursor to go dark IMMEDIATELY
-   document.body.classList.add("menu-is-open");
+    if (isOpen) {
+      // Prevent body scroll
+      document.body.style.overflow = "hidden";
 
-    const tl = gsap.timeline();
+      // Tell cursor to go dark IMMEDIATELY
+      document.body.classList.add("menu-is-open");
 
-    tl.set(overlay, { display: "flex" });
-    tl.fromTo(
-      overlay,
-      { clipPath: "circle(0% at 100% 0%)" },
-      {
-        clipPath: "circle(150% at 100% 0%)",
-        duration: 0.8,
-        ease: "power4.inOut",
-      }
-    );
+      const tl = gsap.timeline();
 
-    tl.fromTo(
-      links.children,
-      { y: 80, opacity: 0, rotateX: 40 },
-      {
-        y: 0,
-        opacity: 1,
-        rotateX: 0,
+      tl.set(overlay, { display: "flex" });
+      tl.fromTo(
+        overlay,
+        { clipPath: "circle(0% at 100% 0%)" },
+        {
+          clipPath: "circle(150% at 100% 0%)",
+          duration: 0.8,
+          ease: "power4.inOut",
+        }
+      );
+
+      tl.fromTo(
+        links.children,
+        { y: 80, opacity: 0, rotateX: 40 },
+        {
+          y: 0,
+          opacity: 1,
+          rotateX: 0,
+          duration: 0.6,
+          stagger: 0.08,
+          ease: "power3.out",
+        },
+        "-=0.3"
+      );
+
+      tl.fromTo(
+        bottom,
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
+        "-=0.3"
+      );
+
+    } else {
+      // Restore body scroll
+      document.body.style.overflow = "";
+
+      // Tell cursor to go light IMMEDIATELY
+      document.body.classList.remove("menu-is-open");
+
+      const tl = gsap.timeline();
+
+      tl.to([links.children, bottom], {
+        opacity: 0,
+        y: -20,
+        duration: 0.3,
+        ease: "power2.in",
+      });
+
+      tl.to(overlay, {
+        clipPath: "circle(0% at 100% 0%)",
         duration: 0.6,
-        stagger: 0.08,
-        ease: "power3.out",
-      },
-      "-=0.3"
-    );
-
-    tl.fromTo(
-      bottom,
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.5, ease: "power3.out" },
-      "-=0.3"
-    );
-
-  } else {
-    // Restore body scroll
-    document.body.style.overflow = "";
-
-    // Tell cursor to go light IMMEDIATELY
-   document.body.classList.remove("menu-is-open");
-
-    const tl = gsap.timeline();
-
-    tl.to([links.children, bottom], {
-      opacity: 0,
-      y: -20,
-      duration: 0.3,
-      ease: "power2.in",
-    });
-
-    tl.to(overlay, {
-      clipPath: "circle(0% at 100% 0%)",
-      duration: 0.6,
-      ease: "power4.inOut",
-      onComplete: () => {
-        gsap.set(overlay, { display: "none" });
-      },
-    });
-  }
-}, [isOpen]);
+        ease: "power4.inOut",
+        onComplete: () => {
+          gsap.set(overlay, { display: "none" });
+        },
+      });
+    }
+  }, [isOpen]);
 
   const navLinks = [
     { name: "WORK", href: "#work" },
     { name: "SERVICES", href: "#services" },
-    { name: "ABOUT", href: "#about" },
+    { name: "ABOUT", href: "/about" },
     { name: "CONTACT", href: "#contact" },
   ];
 
@@ -111,23 +111,23 @@ useEffect(() => {
       style={{ display: "none", clipPath: "circle(0% at 100% 0%)" }}
       className="fixed inset-0 z-[998] flex flex-col bg-[#f45100]"
     >
-    <div
-  ref={contentRef}
-  className="flex flex-1 flex-col justify-between px-8 pt-8 md:px-16"
->
-  {/* Close Button */}
-  <div className="flex justify-end">
-    <button
-      onClick={() => setIsOpen(false)}
-      className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-background)] transition-opacity hover:opacity-50"
-    >
-      CLOSE
-      <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-background)]/20 transition-all duration-300 group-hover:rotate-90 group-hover:border-[var(--color-background)]">
-        <span className="absolute h-[1.5px] w-4 rotate-45 bg-[var(--color-background)]" />
-        <span className="absolute h-[1.5px] w-4 -rotate-45 bg-[var(--color-background)]" />
-      </span>
-    </button>
-  </div>
+      <div
+        ref={contentRef}
+        className="flex flex-1 flex-col justify-between px-8 pt-8 md:px-16"
+      >
+        {/* Close Button */}
+        <div className="flex justify-end">
+          <button
+            onClick={() => setIsOpen(false)}
+            className="group flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.2em] text-[var(--color-background)] transition-opacity hover:opacity-50"
+          >
+            CLOSE
+            <span className="relative flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-background)]/20 transition-all duration-300 group-hover:rotate-90 group-hover:border-[var(--color-background)]">
+              <span className="absolute h-[1.5px] w-4 rotate-45 bg-[var(--color-background)]" />
+              <span className="absolute h-[1.5px] w-4 -rotate-45 bg-[var(--color-background)]" />
+            </span>
+          </button>
+        </div>
         {/* Nav Links */}
         <div ref={linksRef} className="flex flex-col gap-4" style={{ perspective: "600px" }}>
           {navLinks.map((link, index) => (
@@ -156,7 +156,7 @@ useEffect(() => {
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           {/* Socials */}
           <div className="flex gap-6">
-       
+
             <a
               href="#"
               className="text-[var(--color-background)] transition-opacity hover:opacity-50"
