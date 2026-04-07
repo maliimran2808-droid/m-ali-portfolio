@@ -97,18 +97,37 @@ export default function AboutPage() {
             className="min-h-screen w-full"
             style={{ background: "#000" }}
         >
-
+            {/* ── Back Button ── */}
+            <div className="fixed left-8 top-23 z-5000">
+                <div className="overflow-hidden border p-2 rounded-full">
+                    <a
+                        href="/"
+                        className="reveal block font-[family-name:var(--font-montserrat)] text-xs uppercase tracking-widest text-white/40 transition-colors duration-300 hover:text-white"
+                    >
+                        ← Back
+                    </a>
+                </div>
+            </div>
 
             {/* ════════════════════════════════
           SECTION 1 — Page Title
       ════════════════════════════════ */}
-            <section className="w-full px-6 pb-0 pt-32 md:px-12 lg:px-20">
-                <div className="overflow-hidden">
+            <section className="w-full pb-0 pt-20 ">
+                <div className="overflow-hidden text-center">
                     <h1
-                        className="reveal block w-full font-[family-name:var(--font-montserrat)] font-[400] uppercase leading-none text-white"
+                        className="reveal block w-full font-[family-name:var(--font-poppins)] font-[400] uppercase leading-none text-white"
                         style={{
-                            fontSize: "clamp(80px, 24vw, 24vw)",
-                            letterSpacing: "-0.07em",
+                            fontSize: "clamp(60px, 31vw, 31vw)",
+                            letterSpacing: "-0.06em",
+                            width: "fit-content",
+                            margin: "0 auto",
+                            // ── Top to bottom gradient on the text ──
+                            background: "linear-gradient(180deg, #f55200 0%, #fa7200 100%)",
+                            WebkitBackgroundClip: "text",
+                            WebkitTextFillColor: "transparent",
+                            transform: "translate(0px, 0px)",
+                            backgroundClip: "text",
+                            opacity: "1",
                         }}
                     >
                         About
