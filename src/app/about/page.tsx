@@ -1,271 +1,263 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useEffect, useRef, ReactNode } from "react";
 
-gsap.registerPlugin(ScrollTrigger);
+// ─────────────────────────────────────────────────────────────────────────────
+// Types
+// ─────────────────────────────────────────────────────────────────────────────
+interface RevealProps {
+    children: ReactNode;
+    delay?: number;
+    threshold?: number;
+    className?: string;
+}
 
-export default function AboutPage() {
-    const pageRef = useRef<HTMLDivElement>(null);
-    const divider1Ref = useRef<HTMLDivElement>(null);
-    const divider2Ref = useRef<HTMLDivElement>(null);
+interface ExpEntry {
+    role: string;
+    company: string;
+    dates: string;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Data  — edit these without touching JSX
+// ─────────────────────────────────────────────────────────────────────────────
+const TOOLS = [
+    "React", "Next.js", "TypeScript", "Tailwind CSS",
+    "HTML", "CSS", "JavaScript", "Figma",
+    "Adobe Illustrator", "Framer Motion",
+];
+
+const EXPERIENCE: ExpEntry[] = [
+    { role: "Website Developer", company: "@ NextArt Solutions", dates: "2023 – Present" },
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Scroll-reveal wrapper
+// Tailwind handles static styles; inline styles drive the JS animation state
+// ─────────────────────────────────────────────────────────────────────────────
+function Reveal({ children, delay = 0, threshold = 0.15, className = "" }: RevealProps) {
+    const innerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        const page = pageRef.current;
-        const divider1 = divider1Ref.current;
-        const divider2 = divider2Ref.current;
-        if (!page) return;
+        const el = innerRef.current;
+        if (!el) return;
 
-        // ── All reveal elements ──
-        const revealEls = page.querySelectorAll(".reveal");
-        gsap.set(revealEls, { y: 50, opacity: 0 });
-
-        revealEls.forEach((el) => {
-            ScrollTrigger.create({
-                trigger: el,
-                start: "top 88%",
-                onEnter: () => {
-                    gsap.to(el, {
-                        y: 0,
-                        opacity: 1,
-                        duration: 0.9,
-                        ease: "power3.out",
-                    });
-                },
-                once: true,
-            });
-        });
-
-        // ── Divider 1 ──
-        if (divider1) {
-            gsap.set(divider1, { scaleX: 0, transformOrigin: "left center" });
-            ScrollTrigger.create({
-                trigger: divider1,
-                start: "top 85%",
-                onEnter: () => {
-                    gsap.to(divider1, {
-                        scaleX: 1,
-                        duration: 1.4,
-                        ease: "power3.inOut",
-                    });
-                },
-                once: true,
-            });
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduced) {
+            el.style.opacity = "1";
+            el.style.transform = "translateY(0)";
+            return;
         }
 
-        // ── Divider 2 ──
-        if (divider2) {
-            gsap.set(divider2, { scaleX: 0, transformOrigin: "left center" });
-            ScrollTrigger.create({
-                trigger: divider2,
-                start: "top 85%",
-                onEnter: () => {
-                    gsap.to(divider2, {
-                        scaleX: 1,
-                        duration: 1.4,
-                        ease: "power3.inOut",
-                    });
-                },
-                once: true,
-            });
-        }
-
-        return () => {
-            ScrollTrigger.getAll().forEach((t) => t.kill());
-        };
-    }, []);
-
-    const tools = [
-        "React",
-        "Next.js",
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "Illustrator",
-        "Figma",
-        "Tailwind CSS",
-        "GSAP",
-        "TypeScript",
-        "Node.js",
-        "Framer Motion",
-    ];
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        el.style.opacity = "1";
+                        el.style.transform = "translateY(0)";
+                    }, delay);
+                    observer.disconnect();
+                }
+            },
+            { threshold }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [delay, threshold]);
 
     return (
-        <div
-            ref={pageRef}
-            className="min-h-screen w-full"
-            style={{ background: "#000" }}
-        >
-            {/* ── Back Button ── */}
-            <div className="fixed left-8 top-23 z-5000">
-                <div className="overflow-hidden border p-2 rounded-full">
-                    <a
-                        href="/"
-                        className="reveal block font-[family-name:var(--font-montserrat)] text-xs uppercase tracking-widest text-white/40 transition-colors duration-300 hover:text-white"
-                    >
-                        ← Back
-                    </a>
-                </div>
+        <div className={`overflow-hidden ${className}`}>
+            <div
+                ref={innerRef}
+                style={{
+                    opacity: 0,
+                    transform: "translateY(44px)",
+                    transition: "opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1)",
+                    willChange: "opacity, transform",
+                }}
+            >
+                {children}
             </div>
+        </div>
+    );
+}
 
-            {/* ════════════════════════════════
-          SECTION 1 — Page Title
-      ════════════════════════════════ */}
-            <section className="w-full pb-0 pt-20 ">
-                <div className="overflow-hidden text-center">
-                    <h1
-                        className="reveal block w-full font-[family-name:var(--font-poppins)] font-[400] uppercase leading-none text-white"
-                        style={{
-                            fontSize: "clamp(60px, 31vw, 31vw)",
-                            letterSpacing: "-0.06em",
-                            width: "fit-content",
-                            margin: "0 auto",
-                            // ── Top to bottom gradient on the text ──
-                            background: "linear-gradient(180deg, #f55200 0%, #fa7200 100%)",
-                            WebkitBackgroundClip: "text",
-                            WebkitTextFillColor: "transparent",
-                            transform: "translate(0px, 0px)",
-                            backgroundClip: "text",
-                            opacity: "1",
-                        }}
-                    >
-                        About
-                    </h1>
-                </div>
-            </section>
+// ─────────────────────────────────────────────────────────────────────────────
+// Animated divider — scaleX 0 → 1 from left on scroll
+// ─────────────────────────────────────────────────────────────────────────────
+function Divider() {
+    const lineRef = useRef<HTMLDivElement>(null);
 
-            {/* ════════════════════════════════
-          SECTION 2 — Two Column Intro
-      ════════════════════════════════ */}
-            <section className="w-full px-6 py-16 md:px-12 lg:px-20">
-                <div className="flex flex-col gap-12 md:flex-row md:gap-16">
+    useEffect(() => {
+        const el = lineRef.current;
+        if (!el) return;
 
-                    {/* Left Column — Text */}
-                    <div className="flex flex-col justify-between gap-10 md:w-[55%]">
+        const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduced) { el.style.transform = "scaleX(1)"; return; }
 
-                        {/* Small intro */}
-                        <div className="overflow-hidden">
-                            <p
-                                className="reveal block font-[family-name:var(--font-montserrat)] font-light leading-relaxed"
-                                style={{ fontSize: "14px", color: "rgba(255,255,255,0.45)" }}
-                            >
-                                Based in Karachi, Pakistan — I'm a full-stack designer and
-                                developer crafting digital experiences that are as functional
-                                as they are beautiful.
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (entry.isIntersecting) {
+                    el.style.transform = "scaleX(1)";
+                    observer.disconnect();
+                }
+            },
+            { threshold: 0.4 }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
+
+    return (
+        <div className="overflow-hidden w-full">
+            <div
+                ref={lineRef}
+                className="h-px w-full bg-white/10"
+                style={{
+                    transform: "scaleX(0)",
+                    transformOrigin: "left",
+                    transition: "transform 1.2s cubic-bezier(0.16,1,0.3,1)",
+                }}
+            />
+        </div>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Page component
+// ─────────────────────────────────────────────────────────────────────────────
+export default function AboutPage() {
+    return (
+        <>
+            {/* Font import — move to layout.tsx <head> for best performance */}
+            <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        .font-display { font-family: 'Barlow Condensed', 'Arial Narrow', sans-serif; }
+        body { font-family: 'DM Sans', system-ui, sans-serif; }
+      `}</style>
+
+            <main className="min-h-screen bg-[#090909] text-[#f0ede8] antialiased overflow-x-hidden">
+
+                {/* ══════════════════════════════════════════════════════
+            S1 — Full-width hero title
+        ══════════════════════════════════════════════════════ */}
+                <section className="px-6 md:px-12 lg:px-20 pt-20 md:pt-28 max-w-[1400px] mx-auto">
+                    <Reveal threshold={0.05}>
+                        <h1
+                            className="font-display font-extrabold uppercase tracking-[-0.045em] leading-[0.88]
+                         bg-gradient-to-b from-[#f0ede8] to-[#f0ede8]/60
+                         bg-clip-text text-transparent"
+                            style={{ fontSize: "clamp(88px, 17vw, 260px)" }}
+                        >
+                            About
+                        </h1>
+                    </Reveal>
+                </section>
+
+                {/* ══════════════════════════════════════════════════════
+            S2 — Two-column intro (text left / portrait right)
+        ══════════════════════════════════════════════════════ */}
+                <section className="grid grid-cols-1 md:grid-cols-[55fr_45fr] gap-8 lg:gap-16
+                            px-6 md:px-12 lg:px-20 py-10 md:py-16 max-w-[1400px] mx-auto">
+
+                    {/* Left — two text blocks */}
+                    <div className="flex flex-col gap-6 md:gap-8 pt-3">
+                        <Reveal delay={0}>
+                            <p className="text-xs uppercase tracking-[0.2em] text-[#f0ede8]/40 font-light">
+                                Based in Pakistan &nbsp;·&nbsp; Available worldwide
                             </p>
-                        </div>
-
-                        {/* Large personal statement */}
-                        <div className="overflow-hidden">
-                            <p
-                                className="reveal block font-[family-name:var(--font-montserrat)] font-medium leading-[1.3] text-white"
-                                style={{ fontSize: "clamp(20px, 2.2vw, 28px)" }}
-                            >
-                                I bridge the gap between design and development — turning bold
-                                ideas into pixel-perfect, high-performance digital products
-                                that leave a lasting impression.
+                        </Reveal>
+                        <Reveal delay={120}>
+                            <p className="text-[clamp(19px,2vw,26px)] text-[#f0ede8] leading-[1.5] font-light max-w-[480px]">
+                                I&apos;m Muhammad Ali — a website developer who crafts{" "}
+                                <em className="not-italic text-[#f55200]">refined digital experiences</em>{" "}
+                                that feel as good as they look.
                             </p>
-                        </div>
+                        </Reveal>
                     </div>
 
-                    {/* Right Column — Portrait Image */}
-                    <div className="relative md:w-[45%]">
+                    {/* Right — portrait */}
+                    <Reveal delay={60} threshold={0.1}>
                         <div
-                            className="reveal relative w-full overflow-hidden rounded-2xl"
-                            style={{ aspectRatio: "3/4" }}
+                            className="relative aspect-[4/5] overflow-hidden bg-[#0e0e0e]"
+                            role="img"
+                            aria-label="Portrait of Muhammad Ali"
                         >
                             <img
-                                src="/images/portrait.jpg"
+                                src="/portrait.jpg"
                                 alt="Muhammad Ali"
-                                className="h-full w-full object-cover"
-                                style={{ filter: "brightness(0.85) contrast(1.05)" }}
-                            />
-                            {/* Subtle vignette overlay */}
-                            <div
-                                className="absolute inset-0"
-                                style={{
-                                    background:
-                                        "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.5) 100%)",
+                                className="w-full h-full object-cover brightness-[0.85] saturate-90 block"
+                                onError={(e) => {
+                                    (e.target as HTMLImageElement).style.display = "none";
                                 }}
                             />
-                            {/* Grain overlay */}
+                            {/* Fallback gradient if image fails */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a1a] via-[#111] to-[#0d0d0d]
+                              flex items-center justify-center -z-10
+                              text-[#f0ede8]/15 text-[11px] tracking-[0.15em] uppercase">
+                                Portrait
+                            </div>
+                            {/* Vignette */}
+                            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent
+                              to-[#090909]/60 pointer-events-none" />
+                            {/* Grain */}
                             <div
-                                className="absolute inset-0 opacity-20"
+                                className="absolute inset-0 opacity-[0.035] pointer-events-none"
                                 style={{
-                                    backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E")`,
-                                    backgroundSize: "128px 128px",
+                                    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E")`,
+                                    backgroundRepeat: "repeat",
                                 }}
                             />
                         </div>
-                    </div>
+                    </Reveal>
+                </section>
+
+                {/* ══════════════════════════════════════════════════════
+            S3 — Full-width statement paragraph
+        ══════════════════════════════════════════════════════ */}
+                <section className="px-6 md:px-12 lg:px-20 pb-14 md:pb-20 max-w-[1400px] mx-auto">
+                    <Reveal threshold={0.2}>
+                        <p className="text-[clamp(15px,1.4vw,18px)] text-[#f0ede8]/40 leading-[1.9]
+                          font-light italic max-w-[860px]">
+                            &ldquo;I focus on understanding your goals to create visually stunning,
+                            user-friendly websites that perform flawlessly. Combining creative design and
+                            cutting-edge technology, I deliver results that make an impact from day
+                            one.&rdquo;
+                        </p>
+                    </Reveal>
+                </section>
+
+                {/* ── Divider 1 ── */}
+                <div className="px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto">
+                    <Divider />
                 </div>
-            </section>
 
-            {/* ════════════════════════════════
-          SECTION 3 — Full Width Statement
-      ════════════════════════════════ */}
-            <section className="w-full px-6 pb-20 md:px-12 lg:px-20">
-                <div className="overflow-hidden max-w-5xl">
-                    <p
-                        className="reveal block font-[family-name:var(--font-montserrat)] font-light leading-[1.7]"
-                        style={{
-                            fontSize: "clamp(16px, 1.8vw, 20px)",
-                            color: "rgba(255,255,255,0.55)",
-                        }}
-                    >
-                        I focus on understanding your goals to create visually stunning,
-                        user-friendly websites that perform flawlessly. Combining creative
-                        design and cutting-edge technology, I deliver results that make an
-                        impact from day one.
-                    </p>
-                </div>
-            </section>
-
-            {/* ── DIVIDER 1 ── */}
-            <div className="px-6 md:px-12 lg:px-20">
-                <div
-                    ref={divider1Ref}
-                    className="h-px w-full"
-                    style={{ background: "rgba(255,255,255,0.1)" }}
-                />
-            </div>
-
-            {/* ════════════════════════════════
-          SECTION 4 — Tools
-      ════════════════════════════════ */}
-            <section className="w-full px-6 py-20 md:px-12 lg:px-20">
-                <div className="flex flex-col gap-8 md:flex-row md:gap-16">
-
-                    {/* Left: Label */}
-                    <div className="md:w-[40%]">
-                        <div className="overflow-hidden">
-                            <span
-                                className="reveal block font-[family-name:var(--font-montserrat)] font-bold uppercase tracking-[0.3em]"
-                                style={{ fontSize: "12px", color: "#f55200" }}
-                            >
+                {/* ══════════════════════════════════════════════════════
+            S4 — Tools
+        ══════════════════════════════════════════════════════ */}
+                <section
+                    className="px-6 md:px-12 lg:px-20 py-10 md:py-16 max-w-[1400px] mx-auto"
+                    aria-label="Tools and skills"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-[40fr_60fr] gap-4 md:gap-12 items-start">
+                        <Reveal delay={0} threshold={0.2}>
+                            <span className="text-[11px] tracking-[0.22em] uppercase text-[#f55200]
+                               font-medium block pt-1">
                                 Tools
                             </span>
-                        </div>
-                    </div>
-
-                    {/* Right: Tools List */}
-                    <div className="md:w-[60%]">
-                        <div className="overflow-hidden">
+                        </Reveal>
+                        <Reveal delay={100} threshold={0.2}>
                             <p
-                                className="reveal block font-[family-name:var(--font-montserrat)] font-light leading-[2]"
-                                style={{
-                                    fontSize: "clamp(15px, 1.5vw, 17px)",
-                                    color: "rgba(255,255,255,0.85)",
-                                }}
+                                className="text-[clamp(14px,1.3vw,16px)] text-[#f0ede8] leading-[2.1] font-light"
+                                aria-label={`Technologies: ${TOOLS.join(", ")}`}
                             >
-                                {tools.map((tool, i) => (
-                                    <span key={i}>
-                                        <span className="text-white">{tool}</span>
-                                        {i < tools.length - 1 && (
+                                {TOOLS.map((tool, i) => (
+                                    <span key={tool}>
+                                        {tool}
+                                        {i < TOOLS.length - 1 && (
                                             <span
-                                                className="mx-3"
-                                                style={{ color: "#f55200" }}
+                                                className="text-[#f55200] mx-2.5 text-[0.8em] align-middle"
+                                                aria-hidden="true"
                                             >
                                                 ·
                                             </span>
@@ -273,185 +265,148 @@ export default function AboutPage() {
                                     </span>
                                 ))}
                             </p>
-                        </div>
+                        </Reveal>
                     </div>
+                </section>
+
+                {/* ── Divider 2 ── */}
+                <div className="px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto">
+                    <Divider />
                 </div>
-            </section>
 
-            {/* ── DIVIDER 2 ── */}
-            <div className="px-6 md:px-12 lg:px-20">
-                <div
-                    ref={divider2Ref}
-                    className="h-px w-full"
-                    style={{ background: "rgba(255,255,255,0.1)" }}
-                />
-            </div>
-
-            {/* ════════════════════════════════
-          SECTION 5 — Experience
-      ════════════════════════════════ */}
-            <section className="w-full px-6 py-20 md:px-12 lg:px-20">
-                <div className="flex flex-col gap-8 md:flex-row md:gap-16">
-
-                    {/* Left: Label */}
-                    <div className="md:w-[40%]">
-                        <div className="overflow-hidden">
-                            <span
-                                className="reveal block font-[family-name:var(--font-montserrat)] font-bold uppercase tracking-[0.3em]"
-                                style={{ fontSize: "12px", color: "#f55200" }}
-                            >
+                {/* ══════════════════════════════════════════════════════
+            S5 — Experience
+        ══════════════════════════════════════════════════════ */}
+                <section
+                    className="px-6 md:px-12 lg:px-20 py-10 md:py-16 max-w-[1400px] mx-auto"
+                    aria-label="Work experience"
+                >
+                    <div className="grid grid-cols-1 md:grid-cols-[40fr_60fr] gap-4 md:gap-12 items-start">
+                        <Reveal delay={0} threshold={0.2}>
+                            <span className="text-[11px] tracking-[0.22em] uppercase text-[#f55200]
+                               font-medium block pt-1">
                                 Experience
                             </span>
+                        </Reveal>
+                        <div>
+                            {EXPERIENCE.map((exp, i) => (
+                                <Reveal key={i} delay={i * 100} threshold={0.2}>
+                                    <div
+                                        className={i > 0 ? "mt-9 pt-9 border-t border-white/[0.08]" : ""}
+                                    >
+                                        <p className="text-[clamp(17px,1.6vw,20px)] font-medium text-[#f0ede8]
+                                  mb-2 tracking-[-0.01em]">
+                                            {exp.role}
+                                        </p>
+                                        <p className="text-[13px] text-[#f0ede8]/40 tracking-[0.04em] mb-1">
+                                            {exp.company}
+                                        </p>
+                                        <p className="text-[12px] text-[#f0ede8]/25 tracking-[0.06em]">
+                                            {exp.dates}
+                                        </p>
+                                    </div>
+                                </Reveal>
+                            ))}
                         </div>
                     </div>
+                </section>
 
-                    {/* Right: Experience Entries */}
-                    <div className="flex flex-col gap-10 md:w-[60%]">
-
-                        {/* Entry 1 */}
-                        <div className="flex flex-col gap-2">
-                            <div className="overflow-hidden">
-                                <h3
-                                    className="reveal block font-[family-name:var(--font-montserrat)] font-semibold text-white"
-                                    style={{ fontSize: "clamp(18px, 2vw, 22px)" }}
-                                >
-                                    Website Developer
-                                </h3>
-                            </div>
-                            <div className="overflow-hidden">
-                                <p
-                                    className="reveal block font-[family-name:var(--font-montserrat)] font-light"
-                                    style={{ fontSize: "13px", color: "rgba(255,255,255,0.45)" }}
-                                >
-                                    @ NextArt Solutions
-                                </p>
-                            </div>
-                            <div className="overflow-hidden">
-                                <p
-                                    className="reveal block font-[family-name:var(--font-montserrat)] font-light"
-                                    style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)" }}
-                                >
-                                    2023 – Present
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Entry 2 — Add more as needed */}
-                        <div className="flex flex-col gap-2">
-                            <div className="overflow-hidden">
-                                <h3
-                                    className="reveal block font-[family-name:var(--font-montserrat)] font-semibold text-white"
-                                    style={{ fontSize: "clamp(18px, 2vw, 22px)" }}
-                                >
-                                    UI/UX Designer
-                                </h3>
-                            </div>
-                            <div className="overflow-hidden">
-                                <p
-                                    className="reveal block font-[family-name:var(--font-montserrat)] font-light"
-                                    style={{ fontSize: "13px", color: "rgba(255,255,255,0.45)" }}
-                                >
-                                    @ Freelance
-                                </p>
-                            </div>
-                            <div className="overflow-hidden">
-                                <p
-                                    className="reveal block font-[family-name:var(--font-montserrat)] font-light"
-                                    style={{ fontSize: "13px", color: "rgba(255,255,255,0.3)" }}
-                                >
-                                    2021 – 2023
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            {/* ════════════════════════════════
-          SECTION 6 — CTA Glass Banner
-      ════════════════════════════════ */}
-            <section className="relative w-full overflow-hidden px-6 py-24 md:px-12 lg:px-20">
-
-                {/* Background Image */}
-                <div className="absolute inset-0 z-0">
-                    <img
-                        src="/images/cta-bg.jpg"
-                        alt="CTA Background"
-                        className="h-full w-full object-cover"
-                        style={{ filter: "brightness(0.4)" }}
-                    />
-                    <div className="absolute inset-0 bg-black/40" />
+                {/* ── Divider 3 ── */}
+                <div className="px-6 md:px-12 lg:px-20 max-w-[1400px] mx-auto">
+                    <Divider />
                 </div>
 
-                {/* Glass Card */}
-                <div
-                    className="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center justify-center rounded-[2.5rem] p-10 text-center md:p-16"
-                    style={{
-                        background: "rgba(255,255,255,0.07)",
-                        border: "1px solid rgba(255,255,255,0.12)",
-                        backdropFilter: "blur(20px)",
-                        WebkitBackdropFilter: "blur(20px)",
-                        boxShadow: "0 8px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
-                    }}
+                {/* ══════════════════════════════════════════════════════
+            S6 — CTA glass banner
+        ══════════════════════════════════════════════════════ */}
+                <section
+                    className="relative w-full flex items-center justify-center overflow-hidden
+                     min-h-[560px] px-6 md:px-12 lg:px-20
+                     py-[clamp(60px,8vw,120px)] mt-6 md:mt-10"
+                    aria-label="Contact call to action"
                 >
-                    {/* Label */}
-                    <div className="overflow-hidden mb-5">
-                        <span
-                            className="reveal block font-[family-name:var(--font-montserrat)] text-[10px] font-bold uppercase tracking-[0.4em]"
-                            style={{ color: "#f55200" }}
-                        >
-                            Contact Us
-                        </span>
-                    </div>
+                    {/* Background layers */}
+                    <div className="absolute inset-0 bg-[#0e0e0e]" />
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background:
+                                "radial-gradient(ellipse 70% 60% at 20% 60%, rgba(245,82,0,0.1) 0%, transparent 70%)",
+                        }}
+                    />
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            background:
+                                "radial-gradient(ellipse 50% 50% at 85% 25%, rgba(245,82,0,0.06) 0%, transparent 65%)",
+                        }}
+                    />
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            backgroundImage:
+                                "radial-gradient(circle, rgba(240,237,232,0.07) 1px, transparent 1px)",
+                            backgroundSize: "28px 28px",
+                        }}
+                    />
 
-                    {/* Headline */}
-                    <div className="overflow-hidden mb-6">
-                        <h2
-                            className="reveal block font-[family-name:var(--font-montserrat)] font-black uppercase leading-[1.05] tracking-tight text-white"
-                            style={{ fontSize: "clamp(32px, 4vw, 52px)" }}
-                        >
-                            Ready to Transform<br />Your Vision?
-                        </h2>
-                    </div>
+                    {/* Glass card */}
+                    <div
+                        className="relative z-10 w-full max-w-[800px] text-center flex flex-col
+                       items-center gap-6 px-8 md:px-16 lg:px-24 py-12 md:py-20
+                       border border-white/[0.11]
+                       shadow-[0_40px_100px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.07)]"
+                        style={{
+                            backdropFilter: "blur(28px) saturate(1.2)",
+                            WebkitBackdropFilter: "blur(28px) saturate(1.2)",
+                            background: "rgba(255,255,255,0.05)",
+                        }}
+                    >
+                        <Reveal delay={0} threshold={0.2}>
+                            <span className="text-[10px] tracking-[0.28em] uppercase text-[#f55200] font-medium">
+                                Contact Us
+                            </span>
+                        </Reveal>
 
-                    {/* Paragraph */}
-                    <div className="overflow-hidden mb-10 max-w-md">
-                        <p
-                            className="reveal block font-[family-name:var(--font-montserrat)] font-light leading-relaxed"
-                            style={{ fontSize: "15px", color: "rgba(255,255,255,0.6)" }}
-                        >
-                            Let's build something extraordinary together. Reach out and
-                            let's talk about your project.
-                        </p>
-                    </div>
+                        <Reveal delay={100} threshold={0.2}>
+                            <h2
+                                className="font-display font-extrabold uppercase tracking-[-0.03em]
+                           leading-none text-[#f0ede8]"
+                                style={{ fontSize: "clamp(38px,5.5vw,64px)" }}
+                            >
+                                Ready to Transform
+                                <br />
+                                Your Vision?
+                            </h2>
+                        </Reveal>
 
-                    {/* CTA Button */}
-                    <div className="overflow-hidden">
-                        <a
-                            href="/contact"
-                            className="reveal inline-block rounded-full px-10 py-4 font-[family-name:var(--font-montserrat)] text-xs font-bold uppercase tracking-widest text-white transition-all duration-300"
-                            style={{ background: "#f55200" }}
-                            onMouseEnter={(e) => {
-                                e.currentTarget.style.background = "#fff";
-                                e.currentTarget.style.color = "#f55200";
-                                e.currentTarget.style.boxShadow = "0 0 40px rgba(245,82,0,0.5)";
-                                e.currentTarget.style.transform = "translateY(-2px)";
-                            }}
-                            onMouseLeave={(e) => {
-                                e.currentTarget.style.background = "#f55200";
-                                e.currentTarget.style.color = "#fff";
-                                e.currentTarget.style.boxShadow = "none";
-                                e.currentTarget.style.transform = "translateY(0)";
-                            }}
-                        >
-                            Get In Touch →
-                        </a>
-                    </div>
-                </div>
-            </section>
+                        <Reveal delay={200} threshold={0.2}>
+                            <p className="text-[clamp(14px,1.2vw,15px)] text-[#f0ede8]/40 leading-[1.8]
+                            font-light max-w-[440px]">
+                                Let&apos;s build something extraordinary together. Share your idea and I&apos;ll
+                                get back to you within 24 hours to discuss next steps.
+                            </p>
+                        </Reveal>
 
-            {/* ── Bottom Spacing ── */}
-            <div className="h-24" />
-        </div>
+                        <Reveal delay={300} threshold={0.2}>
+                            <a
+                                href="/contact"
+                                className="inline-flex items-center gap-2.5 px-10 py-[15px]
+                           bg-transparent border border-[#f55200] text-[#f0ede8]
+                           text-[12px] font-medium tracking-[0.14em] uppercase
+                           transition-all duration-300 ease-out
+                           hover:bg-[#f55200] hover:text-white
+                           hover:shadow-[0_0_40px_rgba(245,82,0,0.35),0_0_80px_rgba(245,82,0,0.15)]
+                           focus-visible:outline focus-visible:outline-2
+                           focus-visible:outline-[#f55200] focus-visible:outline-offset-4"
+                            >
+                                Get In Touch <span aria-hidden="true">→</span>
+                            </a>
+                        </Reveal>
+                    </div>
+                </section>
+
+            </main>
+        </>
     );
-}
+} 9
